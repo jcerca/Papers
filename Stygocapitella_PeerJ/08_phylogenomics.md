@@ -59,12 +59,12 @@ perl BaCoCa.v1.105.pl -i FcC_supermatrix.fas -p partitions.bacoca.tsv
 
 Now we plot BaCoCa's results on the tree.
 
-# 1. BaCoCa provides negative and positive missingness overlaps
-# We have to fill the dataframe with NAs and not empty runs. You can do it by loading the file onto on Excel and:
-# "Control+G", "special", "select blanks", type "NA" and Control+enter
+1. BaCoCa provides negative and positive missingness overlaps
+We have to fill the dataframe with NAs and not empty runs. You can do it by loading the file onto on Excel and:
+"Control+G", "special", "select blanks", type "NA" and Control+enter
 
-# 2. Then obtain a row including missingness by each specimen by summing the rows on excel from the positive overlap file.
-# 3. We load things on R, using saga because my local version of R messes up.
+2. Then obtain a row including missingness by each specimen by summing the rows on excel from the positive overlap file.
+3. We load things on R, using saga because my local version of R messes up.
 
 ```
 R
