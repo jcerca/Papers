@@ -55,6 +55,13 @@ On the final column of out.imiss we can see the % of missing data. I noted down 
 ```
 denovo_map.pl --samples $reads_dir -O $popmap_cleaned -o $out_dir -M 3 -n 3 -m 3 -T 4 &> $logfile
 
-# And I cleaned the final dataset, by using the "populations" module. The final of stacks. I asked it to generate a vcf file, with the following cut-offs: -r 0.25, -p 4.
-populations -P $out_dir -M $popmap_complete -t 4 --vcf --fasta-samples --fasta-loci -O $out_dir/r_25_p4 -r 0.25 -p 5 &> $out_dir/r_25_p4/logfile.oe
+# And I cleaned the final dataset, by using the "populations" module. The final of stacks. I asked it to generate a vcf file, with the following cut-offs: -r 0.5, -p 5.
+populations -P $out_dir -M $popmap_complete -t 4 --vcf --fasta-samples --fasta-loci -O $out_dir/r_50_p8 -r 0.50 -p 8 &> $out_dir/r_50_p8/logfile.oe
+```
+
+Finally, I renamed the .vcf file with snps, with a name that allows us remembering what we did, by adding the species names and the cut-offs we just implemented.
+
+```
+mv populations.snps.vcf Stygocapitella.subterranea.josemariobrancoi.westheidei.r50.p8.stacks.vcf
+gzip Stygocapitella.subterranea.josemariobrancoi.westheidei.r50.p8.stacks.vcf
 ```
