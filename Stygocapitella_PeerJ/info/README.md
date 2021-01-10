@@ -14,7 +14,7 @@ Notice that the structure of population maps may have been corrupted as I copied
 ...
 
 
-It also contains the barcodes for the two sequencing lanes, lane01 and lane02.
+It also contains the barcodes for the two sequencing lanes, barcode01, which corresponds to lane 01, and barcode02 which corresponds to lane02.
 barcodes_lane01.tsv
 barcodes_lane02.tsv
 
