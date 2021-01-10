@@ -1,6 +1,6 @@
-A principal components analysis should be one of your first analysis! Here, we will be using the .vcf file generated in step 02.
+A principal components analysis should be one of your first analysis! Here, we will be using the .vcf file generated in step 02. I also include a MultiDimensional Scaling (MDS) analysis, which is more robust to missing data.
 
-We will be doing this in R.
+PCA: We will be doing this in R.
 
 ```
 # Few notes. The native format for adegenet, a library to generate PCAs, is "genlight".
@@ -68,4 +68,55 @@ b
 c
 d
 dev.off()
+```
+
+Now for the MDS:
+```
+# We will do the MDS using plink, a commonly used pipeline for population genetics data.
+
+# 1. Getting the vcf to plink format..
+VCF=Stygocapitella.subterranea.josemariobrancoi.westheidei.r50.p8.stacks.maf0.05.maxMeanDP100.minMeanDP10.indswith90missingnessRemoved.randomSNP.vcf
+vcftools --vcf $VCF --plink
+
+# Note, theoutput will just be called "out".
+
+# 2. We need to add a "c" in front of chromossome so it is not just a number, otherwise plink will not like it.
+awk '{print "c"$1 "\tc" $2 "\t" $3 "\t" $4}' out.map > out.tmp
+mv out.tmp out.map
+
+# 3. Now we need a genome file:
+plink --file out --genome --allow-extra-chr --double-id
+
+# 4. and finally the plot :-)
+plink --file out --read-genome plink.genome --cluster --mds-plot 2 --allow-extra-chr --double-id
+```
+
+Now we move to R, to do the plotting:
+
+```
+setwd("C:/Users/josece_adm/Desktop/project3/15_MDS_stygo")
+
+# Credit: https://arundurvasula.wordpress.com/2015/02/06/pca-with-samtools-snp-calling-and-plink-mds/
+
+d <- read.table("plink.mds", h=T)
+
+library(stringr)
+library(tidyverse)
+
+tmpcolumn<-d$FID
+tmp<-str_split_fixed(tmpcolumn, "_lane", 2) # This one splits the column
+clades<-sapply(strsplit(tmp[,1], "_", fixed=TRUE), tail, 1)
+populations<-str_split_fixed(tmp[,1], "_", 2)
+
+d$clades<-clades
+d$populations<-populations[,1]
+
+plot(d$C1, d$C2, col=d$clades)
+legend("topright", legend= d$clades,pch=19, col=c(2,1,3))
+
+plot(d$C1, d$C2)
+a <- ggplot(d, aes(C1, C2, colour = populations, pch=clades)) + geom_point()
+a
+a1<- ggplot(d, aes(C1, C2, colour = clades)) + geom_point()
+a1
 ```
