@@ -78,7 +78,7 @@ done```
 
 3. Now we need to see See which of the 10,000 runs has the .bestlhoods
 
-````
+```
 cd run_log # (where we have your runs)
 
 for i in $(seq 1 1000); do cat {MODELNAME}_${i}.bestlhoods | grep -v MaxObsLho od | awk -v var=$i '{print var,$NF-$(NF-1)}' | cut -f 1 -d "."; done > ../bestlhood.tsv
