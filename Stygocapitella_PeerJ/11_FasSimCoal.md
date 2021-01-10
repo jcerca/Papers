@@ -74,7 +74,8 @@ cp $ESTIMATES .
 
 ~/local_bin/fsc26_linux64/fsc26 -t $MODEL.tpl -e $MODEL.est -n 1 -C 10 -M -L 40 -c 20 -B 20 -m --multiSFS | tee run_${I}.log
 
-done```
+done
+```
 
 3. Now we need to see See which of the 10,000 runs has the .bestlhoods
 
