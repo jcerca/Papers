@@ -1,0 +1,22 @@
+// Search ranges and rules file
+// ****************************
+
+[PARAMETERS]
+//#isInt? #name   #dist. #min  #max
+//all Ns are in number of haploid individuals
+1  Np        logunif  1000   1e6   output
+1  Ng        logunif  1000   1e6   output
+1  Nb        logunif  1000   1e6   output
+0  RSb       logunif  0.1    10    output
+0  RSa       logunif  0.01   1     output bounded
+0  TPropm    logunif  0.01   1     output bounded
+1  Ta        logunif  1000   3e7   output
+0  Ma        logunif 0.000001 0.01   output
+0  Mz        logunif 0.000001 0.01   output
+0  Mb        logunif 0.000001 0.01   output
+0  Mc        logunif 0.000001 0.01   output
+
+[RULES]
+
+[COMPLEX PARAMETERS]
+1  Tb = Ta * TPropm output
