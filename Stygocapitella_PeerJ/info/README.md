@@ -1,4 +1,4 @@
-This folder contains the population maps:
+This folder contains 4 population maps:
 
 1. popmap_complete.tsv - including all individuals (3 species).
 2. popmap_subterranea.tsv - including only Stygocapitella subterranea
@@ -11,4 +11,16 @@ Notice that the structure of population maps may have been corrupted as I copied
 <sample_02><tab><population_or_species_A>
 <sample_03><tab><population_or_species_B>
 <sample_04><tab><population_or_species_B>
+...
+
+
+It also contains the barcodes for the two sequencing lanes, lane01 and lane02.
+barcodes_lane01.tsv
+barcodes_lane02.tsv
+
+The structure of these consists of two columns, separated by a tab:
+<Barcode_01><tab><sample_01>
+<Barcode_02><tab><sample_02>
+<Barcode_03><tab><sample_03>
+<Barcode_04><tab><sample_04>
 ...
