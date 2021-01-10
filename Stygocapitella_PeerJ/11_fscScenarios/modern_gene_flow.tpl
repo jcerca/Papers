@@ -1,19 +1,34 @@
-// Search ranges and rules file
-// ****************************
-
-[PARAMETERS]
-//#isInt? #name   #dist. #min  #max
-//all Ns are in number of haploid individuals
-1  Np        logunif  1000   1e6   output
-1  Ng        logunif  1000   1e6   output
-1  Nb        logunif  1000   1e6   output
-0  RSb       logunif  0.1    10    output
-0  RSa       logunif  0.01   1     output bounded
-0  TPropm    logunif  0.01   1     output bounded
-1  Ta        logunif  1000   3e7   output
-0  Ma        logunif 0.000001 0.01   output
-0  Mb        logunif 0.000001 0.01   output
-[RULES]
-
-[COMPLEX PARAMETERS]
-1  Tb = Ta * TPropm output
+//Parameters for the coalescence simulation program : fsimcoal2.exe
+3 samples to simulate :
+//Population effective sizes (number of genes)
+Np
+Ng
+Nb
+//Samples sizes and samples age
+30
+30
+30
+//Growth rates  : negative growth implies population expansion
+0
+0
+0
+//Number of migration matrices : 0 implies no migration between demes
+2
+//Migration matrix 0
+0 Ma Mb
+Mc 0 Md
+Me Mf 0
+//Migration matrix 1
+0 0 0
+0 0 0
+0 0 0
+//historical event: time, source, sink, migrants, new deme size, new growth rate, migration matrix index
+2  historical events
+Tb 2 0 1 RSb 0 1
+Ta 1 0 1 RSa 0 1
+//Number of independent loci [chromosome]
+1 0
+//Per chromosome: Number of contiguous linkage Block: a block is a set of contiguous loci
+1
+//per Block:data type, number of loci, per generation recombination and mutation rates and optional parameters
+FREQ  1   0   1.2e-8 OUTEXP
