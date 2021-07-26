@@ -1,7 +1,7 @@
 AMOVA style.
 
 Getting a list of individuals formatted:
-`
+```
 # First, we do a list of the individuals:
 bcftools query -l amphilophus_snp_filter_hardpass.PRUNNED_MAF_COVERAGE.IndsWith0.5MissingnessRemoved.IndsFromHAremoved.MigrantsRemoved.vcf > ind.list
 
@@ -18,29 +18,29 @@ paste ind.list pop.list > popmap.tsv
 #Individual<tab>Population
 nano popmap.tsv
 
-`
+```
 
 Now, converting the vcf using PGDspider:
 
-`
+```
 ml PGDSpider/2.1.1.5-Java-1.8
 
 #let's generate a template.. it'll give us an error!
 java -Xmx1024m -Xms512m -jar $EBROOTPGDSPIDER/PGDSpider2-cli.jar -inputfile amphilophus_snp_filter_hardpass.PRUNNED_MAF_COVERAGE.LDprunned.vcf.IndsWith0.5MissingnessRemoved.IndsFromHAremoved.MigrantsRemoved.vcf -inputformat VCF -outputfile final.arq -outputformat ARLEQUIN
-`
+```
 This code generates a template but gives out a error. In template, and using nano, I changed:
 
-`
+```
 #               VCF_PARSER_PLOIDY_QUESTION=DIPLOID
 #               VCF_PARSER_MONOMORPHIC_QUESTION=false
 #               VCF_PARSER_POP_FILE_QUESTION=./popmap.tsv
 #               VCF_PARSER_POP_QUESTION=true
-`
+```
 
 Ready to convert!!
-`
+```
 java -Xmx1024m -Xms512m -jar $EBROOTPGDSPIDER/PGDSpider2-cli.jar -inputfile amphilophus_snp_filter_hardpass.PRUNNED_MAF_COVERAGE.LDprunned.vcf.IndsWith0.5MissingnessRemoved.IndsFromHAremoved.MigrantsRemoved.vcf -inputformat VCF -outputfile final.arq -outputformat ARLEQUIN -spid template_VCF_ARLEQUIN.spid
-`
+```
 
 Now, on Arquelin, we point and click:
 1. Arquelin v3.5.2.2
