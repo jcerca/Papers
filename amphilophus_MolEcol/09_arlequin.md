@@ -43,7 +43,7 @@ java -Xmx1024m -Xms512m -jar $EBROOTPGDSPIDER/PGDSpider2-cli.jar -inputfile amph
 ```
 
 Now, on Arquelin, we point and click:
-1) Arquelin v3.5.2.2
+.1) Arquelin v3.5.2.2
 1.1) Click on "Open project" > select file created above (i.e. "final.FasSimCoal.onlyHAremoved.arq")
 1.2) Click on "Structure editor",  define groups of populations based on groups. Basically, all different populations are part of "group 1". Click "update project" down below
 1.3) Click on "Settings", & select
