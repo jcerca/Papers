@@ -43,9 +43,8 @@ java -Xmx1024m -Xms512m -jar $EBROOTPGDSPIDER/PGDSpider2-cli.jar -inputfile amph
 ```
 
 Now, on Arquelin, we point and click:
-.1) Arquelin v3.5.2.2
-1.1) Click on "Open project" > select file created above (i.e. "final.FasSimCoal.onlyHAremoved.arq")
-1.2) Click on "Structure editor",  define groups of populations based on groups. Basically, all different populations are part of "group 1". Click "update project" down below
-1.3) Click on "Settings", & select
-1.3.1) AMOVA > "Standard AMOVA computations", "Locus by locus amova"
-1.3.2) Population comparisons > "Pairwise FST"
+Click on "Open project" > select file created above (i.e. "final.FasSimCoal.onlyHAremoved.arq")
+Click on "Structure editor",  define groups of populations based on groups. Basically, all different populations are part of "group 1". Click "update project" down below
+Click on "Settings", & select
+AMOVA > "Standard AMOVA computations", "Locus by locus amova"
+Population comparisons > "Pairwise FST"
