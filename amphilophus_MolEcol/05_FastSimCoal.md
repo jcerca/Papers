@@ -340,7 +340,7 @@ write.table(cbind(deltaL,AIC),paste(args[1],".AIC",sep=""),row.names = F,col.nam
 ```
 
 
-OK. So I did:
+OK. So I did for every model:
 ```
 ml R/4.0.0-foss-2020a
 ./AIC.R pulse_of_geneflow
