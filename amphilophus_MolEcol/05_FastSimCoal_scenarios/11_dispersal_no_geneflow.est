@@ -1,0 +1,22 @@
+// Search ranges and rules file
+// ****************************
+
+[PARAMETERS]
+//#isInt? #name   #dist. #min  #max
+//all Ns are in number of haploid individuals
+1  Nmc       logunif  10     2000  output
+1  Nml       logunif  10     2000  output
+1  Nnc       logunif  10     2000  output
+1  Nnl       logunif  10     2000  output
+0  RSc       logunif  0.1    10    output
+0  RSl       logunif  0.1    10    output
+0  RSa       logunif  0.01   1     output bounded
+0  TPropm    logunif  0.01   1     output bounded
+0  TProph    logunif  0.01   1     output bounded
+1  Ta        logunif  1000   5e5   output
+
+[RULES]
+
+[COMPLEX PARAMETERS]
+1  Tc = Ta * TPropm output
+1  Tl = Tc * TProph output
