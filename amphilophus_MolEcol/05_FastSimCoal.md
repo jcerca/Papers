@@ -146,52 +146,257 @@ cp $obs_file ./${MODEL}_maxL_jointMAFpop1_0.obs
 We get the best .lhoods file from each of the 100 runs, and format a file with the 100 ML distributions for each model:
 
 `
-for i in `ls`; do cd $i/; touch ${i}.lhoods; cd best_likelihood_distributions; for j in `ls`; do sed -n '2,3p' $j/*_maxL/*lhoods; done >> ../${i}.lhoods; cd ../..; done
+for i in dispersal_no_geneflow dispersal_geneflow pulse_of_geneflow; do cd $i/; touch ${i}.lhoods; cd best_likelihood_distributions; for j in `ls`; do sed -n '2,3p' $j/*_maxL/*lhoods; done >> ../${i}.lhoods; cd ../..; done
 `
 
-for i in dispersal_no_geneflow dispersal_geneflow pulse_of_geneflow; do cd $i/; touch ${i}.lhoods; cd best_likelihood_distributions; for j in `ls`; do sed -n '2,3p' $j/*_maxL/*lhoods; done >> ../${i}.lhoods; cd ../..; done
+Now plot this created file over R.
+`
+#fastSIMCOAL
 
-Now plot this over R.
+setwd("C:/Users/Cerca/Desktop/ongoing_stuff_ambientedetrabalho/AMPHILOPHUS/amphi_fasSimCoal/04_UpdatedModels/bestLhood/")
+
+Managua_geneflow<-read.table("Managua_geneflow.lhoods")
+Nicaragua_geneflow<-read.table("Nicaragua_geneflow.lhoods")
+all_geneflow<-read.table("all_geneflow.lhoods")
+ancestral_geneflow<-read.table("ancestral_geneflow.lhoods")
+dispersal_geneflow<-read.table("dispersal_geneflow.lhoods")
+dispersal_no_geneflow<-read.table("dispersal_no_geneflow.lhoods")
+hybrid_origin_managua_geneflow<-read.table("hybrid_origin_managua_geneflow.lhoods")
+hybrid_origin_managua_no_geneflow<-read.table("hybrid_origin_managua_no_geneflow.lhoods")
+hybrid_origin_nicaragua_geneflow<-read.table("hybrid_origin_nicaragua_geneflow.lhoods")
+hybrid_origin_nicaragua_no_geneflow<-read.table("hybrid_origin_nicaragua_no_geneflow.lhoods")
+modern_lineages_geneflow<-read.table("modern_lineages_geneflow.lhoods")
+no_geneflow<-read.table("no_geneflow.lhoods")
+pulse_of_geneflow<-read.table("pulse_of_geneflow.lhoods")
+sympatric_geneflow<-read.table("sympatric_geneflow.lhoods")
 
 
-#### AIC evaluation
-#We need the est files
+par(mfrow=c(1,1))
+
+
+boxplot(range = 0,
+        Managua_geneflow$V1,
+        Nicaragua_geneflow$V1,
+        all_geneflow$V1,
+        ancestral_geneflow$V1,
+        dispersal_geneflow$V1,
+        dispersal_no_geneflow$V1,
+        hybrid_origin_managua_geneflow$V1,
+        hybrid_origin_managua_no_geneflow$V1,
+        hybrid_origin_nicaragua_geneflow$V1,
+        hybrid_origin_nicaragua_no_geneflow$V1,
+        modern_lineages_geneflow$V1,
+        no_geneflow$V1,
+        pulse_of_geneflow$V1,
+        sympatric_geneflow$V1,
+        ylab="Likelihood",xaxt="n")
+
+lablist.x<-as.vector(c("Managua geneflow",
+                       "Nicaragua geneflow",
+                       "all geneflow",
+                       "ancestral geneflow",
+                       "dispersal geneflow",
+                       "dispersal no geneflow",
+                       "hybrid origin managua geneflow",
+                       "hybrid origin managua no geneflow",
+                       "hybrid origin nicaragua geneflow",
+                       "hybrid origin nicaragua no geneflow",
+                       "modern lineages geneflow",
+                       "no geneflow",
+                       "pulse of geneflow",
+                       "sympatric geneflow"))
+axis(1, at=seq(1, 14, by=1), labels = FALSE)
+text(x = seq(1, 14, by=1), par("usr")[3] - 0.2, labels = lablist.x, srt = 45, pos = 1, xpd = TRUE)
+
+
+
+library(tidyverse)
+#install.packages("ggthemes")
+library(ggthemes)
+Managua_geneflow<-read.table("Managua_geneflow.lhoods") %>%
+        rename(flow=V1)
+Managua_geneflow$ID<-rep("Managua_geneflow.lhoods",nrow(Managua_geneflow))
+Nicaragua_geneflow<-read.table("Nicaragua_geneflow.lhoods") %>%
+        rename(flow=V1)
+Nicaragua_geneflow$ID<-rep("Nicaragua_geneflow.lhoods",nrow(Nicaragua_geneflow))
+all_geneflow<-read.table("all_geneflow.lhoods") %>%
+        rename(flow=V1)
+all_geneflow$ID<-rep("all_geneflow.lhoods",nrow(all_geneflow))
+ancestral_geneflow<-read.table("ancestral_geneflow.lhoods") %>%
+        rename(flow=V1)
+ancestral_geneflow$ID<-rep("ancestral_geneflow.lhoods",nrow(ancestral_geneflow))
+dispersal_geneflow<-read.table("dispersal_geneflow.lhoods") %>%
+        rename(flow=V1)
+dispersal_geneflow$ID<-rep("dispersal_geneflow.lhoods",nrow(dispersal_geneflow))
+dispersal_no_geneflow<-read.table("dispersal_no_geneflow.lhoods") %>%
+        rename(flow=V1)
+dispersal_no_geneflow$ID<-rep("dispersal_no_geneflow.lhoods",nrow(dispersal_no_geneflow))
+hybrid_origin_managua_geneflow<-read.table("hybrid_origin_managua_geneflow.lhoods") %>%
+        rename(flow=V1)
+hybrid_origin_managua_geneflow$ID<-rep("hybrid_origin_managua_geneflow.lhoods",nrow(hybrid_origin_managua_geneflow))
+hybrid_origin_managua_no_geneflow<-read.table("hybrid_origin_managua_no_geneflow.lhoods") %>%
+        rename(flow=V1)
+hybrid_origin_managua_no_geneflow$ID<-rep("hybrid_origin_managua_no_geneflow.lhoods",nrow(hybrid_origin_managua_no_geneflow))
+hybrid_origin_nicaragua_geneflow<-read.table("hybrid_origin_nicaragua_geneflow.lhoods") %>%
+        rename(flow=V1)
+hybrid_origin_nicaragua_geneflow$ID<-rep("hybrid_origin_nicaragua_geneflow.lhoods",nrow(hybrid_origin_nicaragua_geneflow))
+hybrid_origin_nicaragua_no_geneflow<-read.table("hybrid_origin_nicaragua_no_geneflow.lhoods") %>%
+        rename(flow=V1)
+hybrid_origin_nicaragua_no_geneflow$ID<-rep("hybrid_origin_nicaragua_no_geneflow.lhoods",nrow(hybrid_origin_nicaragua_no_geneflow))
+modern_lineages_geneflow<-read.table("modern_lineages_geneflow.lhoods") %>%
+        rename(flow=V1)
+modern_lineages_geneflow$ID<-rep("modern_lineages_geneflow.lhoods",nrow(modern_lineages_geneflow))
+no_geneflow<-read.table("no_geneflow.lhoods") %>%
+        rename(flow=V1)
+no_geneflow$ID<-rep("no_geneflow.lhoods",nrow(no_geneflow))
+pulse_of_geneflow<-read.table("pulse_of_geneflow.lhoods") %>%
+        rename(flow=V1)
+pulse_of_geneflow$ID<-rep("pulse_of_geneflow.lhoods",nrow(pulse_of_geneflow))
+sympatric_geneflow<-read.table("sympatric_geneflow.lhoods") %>%
+        rename(flow=V1)
+sympatric_geneflow$ID<-rep("sympatric_geneflow.lhoods",nrow(sympatric_geneflow))
+
+datacombined <- rbind(Managua_geneflow,
+                      Nicaragua_geneflow,
+                      all_geneflow,
+                      ancestral_geneflow,
+                      dispersal_geneflow,
+                      dispersal_no_geneflow,
+                      hybrid_origin_managua_geneflow,
+                      hybrid_origin_managua_no_geneflow,
+                      hybrid_origin_nicaragua_geneflow,
+                      hybrid_origin_nicaragua_no_geneflow,
+                      modern_lineages_geneflow,
+                      no_geneflow,
+                      pulse_of_geneflow,
+                      sympatric_geneflow)
+
+qplot( x=ID , y=flow , data=datacombined , geom=c("boxplot","jitter") , colour=ID) +
+        theme_minimal()
+
+qplot( x=ID , y=flow , data=datacombined , geom=c("boxplot","jitter") , colour=ID) +
+        theme_hc()
+
+`
+
+The reviewer asked us for a AIC evaluation, so we did it to confirm our results!
+For this we need the .est files from the begining.
+
+`
 cp ../01_fsc_scenarios/*est .
 
-# And the bestlhood, from the best run out of 1000
-cp /cluster/work/users/josece/fsc/Managua_geneflow/runs/myarray_272/Managua_geneflow/Managua_geneflow.bestlhoods .
-cp /cluster/work/users/josece/fsc/Nicaragua_geneflow/runs/myarray_925/Nicaragua_geneflow/Nicaragua_geneflow.bestlhoods .
-cp /cluster/work/users/josece/fsc/all_geneflow/runs/myarray_976/all_geneflow/all_geneflow.bestlhoods .
-cp /cluster/work/users/josece/fsc/ancestral_geneflow/runs/myarray_756/ancestral_geneflow/ancestral_geneflow.bestlhoods .
-cp /cluster/work/users/josece/fsc/hybrid_origin_managua_geneflow/runs/myarray_631/hybrid_origin_managua_geneflow/hybrid_origin_managua_geneflow.bestlhoods .
-cp /cluster/work/users/josece/fsc/hybrid_origin_managua_no_geneflow/runs/myarray_60/hybrid_origin_managua_no_geneflow/hybrid_origin_managua_no_geneflow.bestlhoods .
-cp /cluster/work/users/josece/fsc/hybrid_origin_nicaragua_geneflow/runs/myarray_602/hybrid_origin_nicaragua_geneflow/hybrid_origin_nicaragua_geneflow.bestlhoods .
-cp /cluster/work/users/josece/fsc/hybrid_origin_nicaragua_no_geneflow/runs/myarray_695/hybrid_origin_nicaragua_no_geneflow/hybrid_origin_nicaragua_no_geneflow.bestlhoods .
-cp /cluster/work/users/josece/fsc/modern_lineages_geneflow/runs/myarray_503/modern_lineages_geneflow/modern_lineages_geneflow.bestlhoods .
-cp /cluster/work/users/josece/fsc/no_geneflow/runs/myarray_100/no_geneflow/no_geneflow.bestlhoods .
-cp /cluster/work/users/josece/fsc/sympatric_geneflow/runs/myarray_246/sympatric_geneflow/sympatric_geneflow.bestlhoods .
-cp /cluster/work/users/josece/fsc/pulse_of_geneflow/runs/myarray_890/pulse_of_geneflow/pulse_of_geneflow.bestlhoods .
-cp /cluster/work/users/josece/fsc/dispersal_geneflow/runs/myarray_166/dispersal_geneflow/dispersal_geneflow.bestlhoods .
+`
+
+`
+# And the bestlhood, from the best run out of 1000; e.g.:
 cp /cluster/work/users/josece/fsc/dispersal_no_geneflow/runs/myarray_875/dispersal_no_geneflow/dispersal_no_geneflow.bestlhoods .
+`
 
+I got a script from Joana Meier to get the AIC assessment. It looks like this:
+
+`
+#!/usr/bin/env Rscript
+# Joana Meier
+
+# Usage: calculateAIC.sh modelprefix
+
+
+# This script calculates AIC from fsc modeling results
+# Run in the folder with the highest likelihood
+
+# Read model name
+args=commandArgs(TRUE)
+
+# Checks if model name was given
+if(length(args)<1){
+  stop("ERROR: No input / model name given\nUsage: fsc-calculateAIC.R modelname")
+}
+
+# Check if model.bestlhoods file exists
+if(file.exists(paste(args[1],".bestlhoods",sep=""))){
+  bestlhoods<-read.delim(paste(args[1],".bestlhoods",sep=""))
+}else{
+  stop(paste("ERROR: Aborted. No file ",args[1],".bestlhoods file exists",sep=""))
+}
+
+# Check if model.est file exists
+if(file.exists(paste(args[1],".est",sep=""))){
+  est<-readLines(paste(args[1],".est",sep=""))
+}else{
+  stop(paste("ERROR: Aborted. No file ",args[1],".est file exists in this directory!\nUsage: fsc-calculateAIC.R modelname",sep=""))
+}
+
+# Count number of parameters
+k<-(grep("RULES",est))-(grep("//all Ns are",est)+1)
+
+# Calculate AIC
+AIC<-2*k-2*(bestlhoods$MaxEstLhood/log10(exp(1)))
+
+# Calculate delta-likelihood
+deltaL<-bestlhoods$MaxObsLhood-bestlhoods$MaxEstLhood
+
+# Output model.AIC file in simulation folder
+write.table(cbind(deltaL,AIC),paste(args[1],".AIC",sep=""),row.names = F,col.names = T,sep = "\t",quote = F)
+`
+
+
+OK. So I did:
+`
 ml R/4.0.0-foss-2020a
-# Note, I had to modify Joana's script. I basically changed the shebang from "#! /usr/bin/Rscript" to "#!/usr/bin/env Rscript"
-
-
-#Notice, we need the .est file and the .bestlhood file together.
-./AIC.R Managua_geneflow
-./AIC.R all_geneflow
-./AIC.R hybrid_origin_managua_geneflow
-./AIC.R hybrid_origin_nicaragua_geneflow
-./AIC.R modern_lineages_geneflow
-./AIC.R sympatric_geneflow
-./AIC.R Nicaragua_geneflow
-./AIC.R ancestral_geneflow
-./AIC.R hybrid_origin_managua_no_geneflow
-./AIC.R hybrid_origin_nicaragua_no_geneflow
-./AIC.R no_geneflow
-./AIC.R dispersal_geneflow
-./AIC.R dispersal_no_geneflow
 ./AIC.R pulse_of_geneflow
 
-#Use my plotting script :)
+`
+Now, we plot the results:
+
+`
+Managua_geneflow<-("16778.8511764356")
+all_geneflow<-("17963.6260224633")
+hybrid_origin_managua_geneflow<-("17307.327510856")
+hybrid_origin_nicaragua_geneflow<-("17064.5567541613")
+modern_lineages_geneflow<-("17519.096798611")
+sympatric_geneflow<-("17709.6693073868")
+Nicaragua_geneflow<-("17995.0720173849")
+ancestral_geneflow<-("18848.1199271268")
+hybrid_origin_managua_no_geneflow<-("17205.6011943391")
+hybrid_origin_nicaragua_no_geneflow<-("18880.5568530252")
+no_geneflow<-("17467.651086324")
+dispersal_geneflow<-("19245.5363670848")
+dispersal_no_geneflow<-("18829.7176670635")
+pulse_of_geneflow<-("17877.4836018559")
+
+modelnames<-c("Managua_geneflow",
+              "all_geneflow",
+              "hybrid_origin_managua_geneflow",
+              "hybrid_origin_nicaragua_geneflow",
+              "modern_lineages_geneflow",
+              "sympatric_geneflow",
+              "Nicaragua_geneflow",
+              "ancestral_geneflow",
+              "hybrid_origin_managua_no_geneflow",
+              "hybrid_origin_nicaragua_no_geneflow",
+              "no_geneflow",
+              "dispersal_geneflow",
+              "dispersal_no_geneflow",
+              "pulse_of_geneflow")
+
+modelAIC<-c("16778.8511764356",
+            "17963.6260224633",
+            "17307.327510856",
+            "17064.5567541613",
+            "17519.096798611",
+            "17709.6693073868",
+            "17995.0720173849",
+            "18848.1199271268",
+            "17205.6011943391",
+            "18880.5568530252",
+            "17467.651086324",
+            "19245.5363670848",
+            "18829.7176670635",
+            "17877.4836018559")
+
+library(ggplot2)
+# Basic dot plot
+p<-ggplot(df, aes(x=modelnames, y=modelAIC, fill = factor(modelnames))) +
+  geom_dotplot(binaxis='y', stackdir='center')
+p
+`
