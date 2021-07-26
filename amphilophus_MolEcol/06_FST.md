@@ -1,6 +1,6 @@
 This one is easy. First, we make a list of individuals and assign them to populations:
 
-`
+```
 VCF=amphilophus_snp_filter_hardpass.PRUNNED_MAF_COVERAGE.IndsWith0.5MissingnessRemoved.vcf
 
 bcftools query -l $VCF | grep "C_Ma" > C_Ma # getting C_Ma individuals
@@ -8,21 +8,21 @@ bcftools query -l $VCF | grep "L_Ma" > L_Ma # etc etc
 
 bcftools query -l $VCF | grep "_L_" | grep -v "_Ma" > L_Nic
 bcftools query -l $VCF | grep "_C_" | grep -v "_Ma" > C_Nic
-`
+```
 
 
 Now, we use fst. One example:
 
-`
+```
 vcftools --vcf amphilophus_snp_filter_hardpass.PRUNNED_MAF_COVERAGE.IndsWith0.5MissingnessRemoved.vcf \
 --fst-window-size 50000 --fst-window-step 10000 --weir-fst-pop C_Ma \
 --weir-fst-pop C_Nic \
 --out Cman_VS_Cnic
-`
+```
 
 Finally, we plot:
 
-`
+```
 rm(list = ls())
 library(tidyverse)
 
@@ -76,4 +76,4 @@ a <- a + facet_grid(~scaffoldindex, scales = "free_x")
 #a <- a + facet_wrap(~scaffoldindex)
 a + theme_light()
 a + theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(), axis.line=element_line())
-`
+```
