@@ -28,7 +28,7 @@ cat $REF | bcftools consensus -s $SAMPLE ${SAMPLE}_call.norm.flt-indels.vcf.gz >
 gzip $FASTA
 ```
 
-### 03 - now we use Phyluce
+### 02 - now we use Phyluce
 
 ```
 # Following the following tutorial:
@@ -129,11 +129,9 @@ for i in *fasta; do sed -e " />/! s/.*fa//" $i | sed "s/.*\//>/; s/\.deinter.*//
 # sed -e " />/! s/.*fa//" $i | # on lines without ">", remove everything before fa (i.e. clean everything before the sequence)
 # sed "s/.*\//>/; s/\.deinter.*//" ../08_cleaningUptheheaders/${i%.fasta}.headerCleaned.fasta  # On the remaining header clean everything so we only have the individual ID
 
-
-##
-cd 08_alignment
-
-# on 08_* run
+```
+### 03 - Alingment and tree
+```
 for i in *fasta; do echo "They see me workin $i"; mafft --thread 20 --auto $i > ../08_alignment/${i%.fasta}.fai; done
 
 
@@ -147,7 +145,7 @@ mv FcC_* ../09_concatenation/
 
 ## making the partitions file
 cat FcC_info.xls| grep "uce-" | awk '{print $1" = "$2"-"$3";"}' | sed 's/^/\tcharset /' | sed '1 i\begin sets;' | sed '1 i\#nexus' | sed '$ a\end;' > partitions.nex
-
+```
 
 
 ###
