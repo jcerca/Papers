@@ -112,3 +112,16 @@ samtools depth -a ${sample}_dedup_mapQual_sorted.bam | \
 # Calculat MapStats
 samtools flagstat ${sample}_dedup_mapQual_sorted.bam > ./$sample.MapQual.stats
 ```
+
+### 08 - Obtaining a list of repeat regions
+```
+REF=spider_genome.fna
+GFF=repeats.gff
+
+awk '{print $1"\t1\t"$2}' ../../00_theGenome/T_kauaiensis_ref.fasta.fai > genome.bed
+
+# gff with repeats
+awk '{print $1"\t"$4"\t"$5}' tetragnatha_kauaiensis_11Sep2016_pjasG.fasta.out.gff > repeats.bed
+bedtools subtract -a genome.bed -b repeats.bed > whiteList1.bed
+bedtools sort -i whiteList1.bed > whiteList1_sorted.bed
+```
