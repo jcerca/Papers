@@ -74,21 +74,10 @@ popmap.tsv
 nano test.sets
 
 # Windows of 50 informative snps, moving forward 25 snps at a time.
-../../../../local_bin/Dsuite/Build/Dsuite Dinvestigate -w 50,25 spider.fastaRun.repeatFiltered.vcf.gz popmap.tsv test.sets
-
-
-### 252 seconds
-T_restricta T_perreirai T_kamakou
-D=-0.234851
-f_d=-0.147053 -26721.7/181714
-f_dM=-0.0761522 -26721.7/350899
+Dsuite Dinvestigate -w 50,25 spider.fastaRun.repeatFiltered.vcf.gz popmap.tsv test.sets
 
 
 # Windows of 50 informative snps, moving forward 5 snps at a time.
-../../../../local_bin/Dsuite/Build/Dsuite Dinvestigate -w 50,5 spider.fastaRun.repeatFiltered.vcf.gz popmap.tsv test.sets
-T_restricta T_perreirai T_kamakou
-D=-0.234851
-f_d=-0.147053 -26721.7/181714
-f_dM=-0.0761522 -26721.7/350899
+Dsuite Dinvestigate -w 50,5 spider.fastaRun.repeatFiltered.vcf.gz popmap.tsv test.sets
 
 ```
