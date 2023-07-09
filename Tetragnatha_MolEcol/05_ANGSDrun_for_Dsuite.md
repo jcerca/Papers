@@ -12,8 +12,8 @@ plink --tfile spider.fastaRun.repeatFiltered --double-id --allow-extra-chr --set
 
 cat ../../../07_NGSdist/cleaned.bam.list | awk -F "/" '{print $NF}' | sed 's/_dedup_mapQual_sorted.bam//' > sample.list
 
-bcftools reheader -s sample.list spider.fastaRun.HWEfiltered.repeatFiltered.vcf > renamed.vcf
-mv renamed.vcf spider.fastaRun.HWEfiltered.repeatFiltered.vcf
+bcftools reheader -s sample.list spider.fastaRun.repeatFiltered.vcf > renamed.vcf
+mv renamed.vcf spider.fastaRun.repeatFiltered.vcf
 ```
 
 ### 03 - D suite!
