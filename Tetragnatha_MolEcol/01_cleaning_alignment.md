@@ -69,3 +69,46 @@ rm ${PREFIX}_merge.bam
 ```
 samtools flagstat ${PREFIX}.bam > ./mapqual/$PREFIX.MappingQuality.stats
 ```
+
+### 06 - marking duplicates
+
+```
+# We start by sorting using PICARD
+echo "### Running Picard sort on $sample ###"
+gatk SortSam \
+--INPUT=${bam_file} \
+--OUTPUT=${sample}_sort.bam \
+--SORT_ORDER=coordinate --TMP_DIR=$TMP
+
+# then marking duplicates
+echo "### Running Picard MarkDuplicates on $sample ###"
+gatk MarkDuplicates \
+--INPUT=${sample}_sort.bam \
+--OUTPUT=${sample}_sort_dedup.bam \
+--METRICS_FILE=${sample}_dedup_metrics.txt
+
+# then we index bams using PICARD
+echo "### Running Picard sort on $sample ###"
+gatk BuildBamIndex \
+--INPUT=${sample}_sort_dedup.bam
+```
+
+### 07 - Calculating stats.
+
+```
+# We start by sorting the alignments.
+samtools view -q 30 --threads 10 -b ${sample}_sort_dedup.bam | \
+samtools sort --threads 10 -T ${sample}.tmp > ${sample}_dedup_mapQual_sorted.bam
+
+# index bams using PICARD
+echo "### Running Picard sort on $sample ###"
+gatk BuildBamIndex \
+--INPUT=${sample}_dedup_mapQual_sorted.bam
+
+# Calculate depth
+samtools depth -a ${sample}_dedup_mapQual_sorted.bam | \
+ awk '{sum+=$3; sumsq+=$3*$3} END { print "Average = ",sum/NR; print "Stdev = ",sqrt(sumsq/NR - (sum/NR)**2)}' > ./${sample}.depth.stats
+
+# Calculat MapStats
+samtools flagstat ${sample}_dedup_mapQual_sorted.bam > ./$sample.MapQual.stats
+```
