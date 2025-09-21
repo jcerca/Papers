@@ -75,9 +75,178 @@ bcftools query -l ${chr}_concat.vcf.gz | xargs -n 1 basename | awk -F '_' '{prin
 bcftools reheader -s samples_${chr} -o ${chr}.vcf.gz ${chr}_concat.vcf.gz
 ```
 
-And, finally, we normalize them:
+We now explore filters by:
+```
+# 1 - subsetting the vcf (it is more pratical like this):
+
+bcftools view ${chr}.vcf.gz > ${chr}.vcf
+ml vcflib/1.0.9-foss-2022a-R-4.2.1
+vcfrandomsample -r 0.001 ${chr}.vcf > ${chr}_subset.vcf
+touch ${chr}_subset_complete
+
+# 2 - We index the subsets
+bgzip ${chr}_subset.vcf
+# index vcf
+bcftools index ${chr}_subset.vcf.gz
+
+# 3 - Concatenate the subsets
+vcf_list=$(ls *gz | sort -t"-" -k2 -n)
+
+bcftools concat --threads 4 -n -O z -o subset.vcf.gz ${vcf_list}
+bcftools index subset.vcf.gz
+
+# 4 - Explore filters:
+echo "Calculate allele frequency"
+vcftools --gzvcf ${vcf} --freq2 --out ${out} --max-alleles 2
+
+echo "Calculate mean depth per individual"
+vcftools --gzvcf ${vcf} --depth --out ${out}
+
+echo "Calculate mean depth per site"
+vcftools --gzvcf ${vcf} --site-mean-depth --out ${out}
+
+echo "Calculate site quality"
+vcftools --gzvcf ${vcf} --site-quality --out ${out}
+
+echo "Calculate proportion of missing data per individual"
+vcftools --gzvcf ${vcf} --missing-indv --out ${out}
+
+echo "Calculate proportion of missing data per site"
+vcftools --gzvcf ${vcf} --missing-site --out ${out}
+
+echo "Calculate heterozygosity and inbreeding coefficient per individual"
+vcftools --gzvcf ${vcf} --het --out ${out}
+
+```
+
+To plot and explore these filters, we use R:
+
+```
+# load tidyverse package
+library(tidyverse)
+
+setwd("/Users/josecer/Library/CloudStorage/OneDrive-UniversitetetiOslo/Science/Projects/2022_UiO_CEES/03_Projects/01_Reindeer_Atle/06_Bioinformatics/01_snp_quality_filters")
+
+#Variant quality
+var_qual <- read_delim("./reindeer.lqual", delim = "\t",
+                       col_names = c("chr", "pos", "qual"), skip = 1)
+
+a <- ggplot(var_qual, aes(qual)) + geom_density(fill = "dodgerblue1", colour = "black", alpha = 0.3)
+a + theme_light() + xlim(0,25)
+
+# will try minimum threshold of 30
+
+#Depth
+var_depth <- read_delim("./reindeer.ldepth.mean", delim = "\t",
+                        col_names = c("chr", "pos", "mean_depth", "var_depth"), skip = 1)
+
+a <- ggplot(var_depth, aes(mean_depth)) + geom_density(fill = "dodgerblue1", colour = "black", alpha = 0.3)
+a + theme_light() + xlim(0,60)
+
+summary(var_depth$mean_depth)
+
+# Missing data
+var_miss <- read_delim("./reindeer.lmiss", delim = "\t",
+                       col_names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
+
+a <- ggplot(var_miss, aes(fmiss)) + geom_density(fill = "dodgerblue1", colour = "black", alpha = 0.3)
+a + theme_light()
+summary(var_miss$fmiss)
+
+# Minor allele frequency
+var_freq <- read_delim("./reindeer.frq", delim = "\t",
+                       col_names = c("chr", "pos", "nalleles", "nchr", "a1", "a2"), skip = 1)
+
+var_freq <- var_freq %>%
+  mutate(
+    # Split the "a1" column at the tab "\t" and extract the second value or assign "0" if not present
+    a2 = ifelse(grepl("\t", a1), sub(".*\t", "", a1), "0"),
+    # Remove the tab character from "a1" (keeping only the first part)
+    a1 = sub("\t.*", "", a1)
+  )
+
+var_freq$maf <- as.numeric(var_freq %>% select(a1, a2) %>% apply(1, function(z) min(z)))
+
+a <- ggplot(var_freq, aes(maf)) + geom_density(fill = "dodgerblue1", colour = "black", alpha = 0.3)
+a + theme_light() + xlim (0.01,0.2)
+summary(var_freq$maf)
+
+
+# indv depth
+ind_depth <- read_delim("./reindeer.idepth", delim = "\t",
+                        col_names = c("ind", "nsites", "depth"), skip = 1)
+
+a <- ggplot(ind_depth, aes(depth)) + geom_histogram(fill = "dodgerblue1", colour = "black", alpha = 0.3)
+a + theme_light() + xlim(0,70)
+
+
+# indv iss
+ind_miss  <- read_delim("./reindeer.imiss", delim = "\t",
+                        col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
+
+a <- ggplot(ind_miss, aes(fmiss)) + geom_histogram(fill = "dodgerblue1", colour = "black", alpha = 0.3)
+a + theme_light() + xlim(0, 0.025)
+
+
+# heterozygosity
+ind_het <- read_delim("./reindeer.het", delim = "\t",
+                      col_names = c("ind","ho", "he", "nsites", "f"), skip = 1)
+
+a <- ggplot(ind_het, aes(f)) + geom_histogram(fill = "dodgerblue1", colour = "black", alpha = 0.3)
+a + theme_light()
+```
+
+We normalize the vcfs:
 
 ```
 # Normalizing files
 bcftools view -V indels -e 'ALT="*" | N_ALT>1' ${chr}.vcf.gz | bcftools norm -D -O z -o ${chr}_norm.vcf.gz
+```
+
+To get an 'all-sites vcf' we do:
+
+```
+echo "Working on $chr"
+cd /cluster/work/users/josece/var_call/norm
+
+# Moving these to a new folkder, and indexing them
+mkdir -p /cluster/work/users/josece/var_call/all_sites_vcfs
+
+qual=20
+min_dp=15
+max_dp=75
+
+vcftools --gzvcf ${chr}_norm.vcf.gz --remove-indels --remove-filtered-all \
+ --max-alleles 2 \
+ --minQ $qual \
+ --min-meanDP ${min_dp} --max-meanDP ${max_dp} \
+ --minDP ${min_dp} --maxDP ${max_dp} \
+ --recode --recode-INFO-all --stdout | \
+ bcftools view -e 'N_ALT>1' -O z -o  ${chr}_filtered_allsites_qual20_mindp15_maxdp75.vcf.gz
+
+mv ${chr}_filtered_allsites_qual20_mindp15_maxdp75.vcf.gz /cluster/work/users/josece/var_call/all_sites_vcfs
+cd /cluster/work/users/josece/var_call/all_sites_vcfs
+
+bcftools index ${chr}_filtered_allsites_qual20_mindp15_maxdp75.vcf.gz
+```
+
+To get a snps-only vcf, we do:
+
+```
+qual=20
+min_dp=15
+max_dp=75
+
+vcftools --gzvcf ${chr}_norm.vcf.gz --remove-indels --remove-filtered-all \
+ --min-alleles 2 --max-alleles 2 \
+ --minQ $qual \
+ --min-meanDP ${min_dp} --max-meanDP ${max_dp} \
+ --minDP ${min_dp} --maxDP ${max_dp} \
+ --recode --recode-INFO-all --stdout | \
+ bcftools view -e 'N_ALT>1' -O z -o ${chr}_snps_qual20_mindp15_maxdp75.vcf.gz
+
+mv ${chr}_snps_qual20_mindp15_maxdp75.vcf.gz /cluster/work/users/josece/var_call/snp_vcfs
+cd /cluster/work/users/josece/var_call/snp_vcfs
+
+bcftools index ${chr}_snps_qual20_mindp15_maxdp75.vcf.gz
 ```
